@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #8d8d8d;
+            color: #000000;
+            line-height: 1.6;
+            padding: 20px;
+            background: linear-gradient(135deg, #3f5b86 0%, #03132c 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: rgb(0, 0, 0);
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff00, #008cff);
+            border-radius: 3px;
+        }
+        
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            transition: all 0.3s ease;
+            align-items: stretch;
+            width: 100%;
+        }
+        
+        #tarefa {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            height: 48px;
+            min-width: 0;
+        }
+
+        #tarefa:focus {
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        #data-vencimento, #categoria {
+            padding: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            height: 48px;
+            min-width: 120px;
+        }
+
+        #data-vencimento:focus, #categoria:focus {
+            border-color: #008cff;
+            box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.2);
+            outline: none;
+        }
+        
+        #categoria {
+            min-width: 100px;
+        }
+        
+        .subtarefa-input {
+            margin-left: 20px;
+            display: flex;
+            gap: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .subtarefa-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .subtarefa-input input:focus {
+            border-color: #fcfcfc;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        .subtarefa-input button {
+            padding: 8px 12px;
+            background-color: #000000;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subtarefa-input button:hover {
+            background-color: #7e7e7e;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .subtarefas {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+        
+        .subtarefa {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            font-size: 14px;
+            background-color: rgba(10, 10, 10, 0.5);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .subtarefa:hover {
+            background-color: rgba(37, 37, 37, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .vencida {
+            border-left: 4px solid #8b8584;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                border-left-color: #000000;
+            }
+            50% {
+                border-left-color: #ff1702;
+            }
+            100% {
+                border-left-color: #000000;
+            }
+        }
+        
+        .categoria-pessoal { 
+            background-color: #e3f2fd;
+            transition: all 0.3s ease;
+        }
+        .categoria-trabalho { 
+            background-color: #f3e5f5;
+            transition: all 0.3s ease;
+        }
+        .categoria-estudos { 
+            background-color: #e8f5e9;
+            transition: all 0.3s ease;
+        }
+        
+        .ordenacao {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+        
+        .ordenacao button {
+            padding: 8px 12px;
+            background-color: #ddd;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ordenacao button:hover {
+            background-color: #ccc;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .ordenacao button.ativo {
+            background-color: #3ea541;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .estatisticas {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .estatisticas:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .grafico {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .barra {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff08, #75d10c);
+            transition: width 0.5s ease-out;
+        }
+        
+        ul {
+            list-style-type: none;
+        }
+        
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        li:hover {
+            background-color: #f1f1f1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        li.completa {
+            text-decoration: line-through;
+            opacity: 0.7;
+            background-color: #e9e9e9;
+            transform: scale(0.98);
+        }
+        
+        .acoes {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .completar, .remover {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .completar {
+            background: linear-gradient(135deg, #0a0a0a, #007ffd);
+            color: white;
+        }
+        
+        .completar:hover {
+            background: linear-gradient(135deg, #1976D2, #0077ff);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .remover {
+            background: linear-gradient(135deg, #000000, #ff0000);
+            color: white;
+        }
+        
+        .remover:hover {
+            background: linear-gradient(135deg, #ff0000, #b71c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .sumario {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .sumario:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filtros {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filtros button {
+            padding: 8px 12px;
+            background-color: #ddd;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filtros button:hover {
+            background-color: #ccc;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .filtros button.ativo {
+            background: linear-gradient(135deg, #000000, #00ff0d);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #adicionar {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #000000, #00ff0d);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        #adicionar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        #adicionar:active {
+            transform: translateY(0);
+        }
+
+        .tarefa-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tarefa-info small {
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #tarefa, #data-vencimento, #categoria, #adicionar {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .filtros {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ordenacao {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Minha Lista de Tarefas</h1>
+        
+        <div class="input-container">
+            <div class="input-row">
+                <input type="text" id="tarefa" placeholder="Digite uma nova tarefa...">
+                <input type="date" id="data-vencimento">
+                <select id="categoria">
+                    <option value="pessoal">Pessoal</option>
+                    <option value="trabalho">Trabalho</option>
+                    <option value="estudos">Estudos</option>
+                </select>
+                <button id="adicionar">Adicionar</button>
+            </div>
+        </div>
+        
+        <div class="ordenacao">
+            <button id="ordenar-data">Ordenar por Data</button>
+            <button id="ordenar-texto">Ordenar por Texto</button>
+            <button id="ordenar-status">Ordenar por Status</button>
+        </div>
+        
+        <div class="filtros">
+            <button id="todas" class="ativo">Todas</button>
+            <button id="ativas">Ativas</button>
+            <button id="completas">Completas</button>
+            <button id="pessoal">Pessoal</button>
+            <button id="trabalho">Trabalho</button>
+            <button id="estudos">Estudos</button>
+        </div>
+        
+        <ul id="lista-tarefas">
+            <!-- Tarefas serão adicionadas aqui pelo JavaScript -->
+        </ul>
+        
+        <div class="sumario" id="sumario">
+            Total de tarefas: 0 | Completas: 0 | Pendentes: 0
+        </div>
+        
+        <div class="estatisticas">
+            <h3>Estatísticas</h3>
+            <div class="grafico">
+                <div class="barra" id="barra-progresso"></div>
+            </div>
+            <p id="estatisticas-texto"></p>
+        </div>
+    </div>
+
+    <script>
+        // Seleção de elementos do DOM
+        const tarefaInput = document.getElementById('tarefa');
+        const adicionarBtn = document.getElementById('adicionar');
+        const listaTarefas = document.getElementById('lista-tarefas');
+        const sumarioEl = document.getElementById('sumario');
+        const todasBtn = document.getElementById('todas');
+        const ativasBtn = document.getElementById('ativas');
+        const completasBtn = document.getElementById('completas');
+        const pessoalBtn = document.getElementById('pessoal');
+        const trabalhoBtn = document.getElementById('trabalho');
+        const estudosBtn = document.getElementById('estudos');
+        const ordenarDataBtn = document.getElementById('ordenar-data');
+        const ordenarTextoBtn = document.getElementById('ordenar-texto');
+        const ordenarStatusBtn = document.getElementById('ordenar-status');
+        
+        // Array para armazenar as tarefas
+        let tarefas = [];
+        let filtroAtual = 'todas';
+        
+        // Carregar tarefas do localStorage (quando existirem)
+        function carregarTarefas() {
+            const tarefasSalvas = localStorage.getItem('tarefas');
+            if (tarefasSalvas) {
+                tarefas = JSON.parse(tarefasSalvas);
+                atualizarLista();
+                atualizarEstatisticas();
+            }
+        }
+        
+        // Salvar tarefas no localStorage
+        function salvarTarefas() {
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+            atualizarEstatisticas();
+        }
+        
+        // Adicionar uma nova tarefa
+        function adicionarTarefa() {
+            const texto = tarefaInput.value.trim();
+            const dataVencimento = document.getElementById('data-vencimento').value;
+            const categoria = document.getElementById('categoria').value;
+            
+            if (texto === '') {
+                alert('Por favor, digite uma tarefa!');
+                return;
+            }
+            
+            // Criar objeto tarefa
+            const tarefa = {
+                id: Date.now(), // Usar timestamp como id único
+                texto: texto,
+                completa: false,
+                dataCriacao: new Date(),
+                dataVencimento: dataVencimento,
+                categoria: categoria,
+                subtarefas: []
+            };
+            
+            // Adicionar ao array de tarefas
+            tarefas.push(tarefa);
+            
+            // Limpar os inputs
+            tarefaInput.value = '';
+            document.getElementById('data-vencimento').value = '';
+            document.getElementById('categoria').value = 'pessoal';
+            
+            // Atualizar a lista e salvar
+            atualizarLista();
+            salvarTarefas();
+        }
+        
+        // Adicionar subtarefa
+        function adicionarSubtarefa(tarefaId, texto) {
+            const tarefa = tarefas.find(item => item.id === tarefaId);
+            if (tarefa) {
+                const subtarefa = {
+                    id: Date.now(),
+                    texto: texto,
+                    completa: false
+                };
+                tarefa.subtarefas.push(subtarefa);
+                atualizarLista();
+                salvarTarefas();
+            }
+        }
+        
+        // Completar uma tarefa
+        function completarTarefa(id) {
+            const tarefa = tarefas.find(item => item.id === id);
+            if (tarefa) {
+                // Verificar se todas as subtarefas estão completas
+                const todasSubtarefasCompletas = tarefa.subtarefas.every(sub => sub.completa);
+                if (todasSubtarefasCompletas || tarefa.subtarefas.length === 0) {
+                    tarefa.completa = !tarefa.completa;
+                    atualizarLista();
+                    salvarTarefas();
+                } else {
+                    alert('Complete todas as subtarefas primeiro!');
+                }
+            }
+        }
+        
+        // Completar uma subtarefa
+        function completarSubtarefa(tarefaId, subtarefaId) {
+            const tarefa = tarefas.find(item => item.id === tarefaId);
+            if (tarefa) {
+                const subtarefa = tarefa.subtarefas.find(sub => sub.id === subtarefaId);
+                if (subtarefa) {
+                    subtarefa.completa = !subtarefa.completa;
+                    atualizarLista();
+                    salvarTarefas();
+                }
+            }
+        }
+        
+        // Remover uma tarefa
+        function removerTarefa(id) {
+            // Filtrar o array para remover a tarefa
+            tarefas = tarefas.filter(item => item.id !== id);
+            
+            // Atualizar a lista e salvar
+            atualizarLista();
+            salvarTarefas();
+        }
+        
+        // Atualizar estatísticas
+        function atualizarEstatisticas() {
+            const total = tarefas.length;
+            const completas = tarefas.filter(tarefa => tarefa.completa).length;
+            const pendentes = total - completas;
+            
+            // Atualizar texto do sumário
+            sumarioEl.textContent = `Total de tarefas: ${total} | Completas: ${completas} | Pendentes: ${pendentes}`;
+            
+            // Atualizar gráfico
+            const porcentagem = total > 0 ? (completas / total) * 100 : 0;
+            document.getElementById('barra-progresso').style.width = `${porcentagem}%`;
+            
+            // Atualizar estatísticas detalhadas
+            const estatisticasTexto = document.getElementById('estatisticas-texto');
+            const hoje = new Date();
+            const tarefasHoje = tarefas.filter(tarefa => {
+                const dataCriacao = new Date(tarefa.dataCriacao);
+                return dataCriacao.toDateString() === hoje.toDateString();
+            }).length;
+            
+            estatisticasTexto.textContent = `Tarefas criadas hoje: ${tarefasHoje}`;
+        }
+        
+        // Atualizar a lista de tarefas
+        function atualizarLista() {
+            // Limpar a lista
+            listaTarefas.innerHTML = '';
+            
+            // Filtrar tarefas
+            let tarefasFiltradas = [...tarefas];
+            
+            if (filtroAtual === 'ativas') {
+                tarefasFiltradas = tarefas.filter(tarefa => !tarefa.completa);
+            } else if (filtroAtual === 'completas') {
+                tarefasFiltradas = tarefas.filter(tarefa => tarefa.completa);
+            } else if (filtroAtual === 'pessoal') {
+                tarefasFiltradas = tarefas.filter(tarefa => tarefa.categoria === 'pessoal');
+            } else if (filtroAtual === 'trabalho') {
+                tarefasFiltradas = tarefas.filter(tarefa => tarefa.categoria === 'trabalho');
+            } else if (filtroAtual === 'estudos') {
+                tarefasFiltradas = tarefas.filter(tarefa => tarefa.categoria === 'estudos');
+            }
+            
+            // Ordenar tarefas
+            if (ordenarDataBtn.classList.contains('ativo')) {
+                tarefasFiltradas.sort((a, b) => new Date(a.dataVencimento) - new Date(b.dataVencimento));
+            } else if (ordenarTextoBtn.classList.contains('ativo')) {
+                tarefasFiltradas.sort((a, b) => a.texto.localeCompare(b.texto));
+            } else if (ordenarStatusBtn.classList.contains('ativo')) {
+                tarefasFiltradas.sort((a, b) => a.completa - b.completa);
+            }
+            
+            // Adicionar cada tarefa à lista
+            tarefasFiltradas.forEach(tarefa => {
+                const li = document.createElement('li');
+                
+                // Verificar se a tarefa está vencida
+                const hoje = new Date();
+                const dataVencimento = new Date(tarefa.dataVencimento);
+                const vencida = dataVencimento < hoje && !tarefa.completa;
+                
+                // Adicionar classes CSS
+                li.classList.add(tarefa.categoria);
+                if (tarefa.completa) li.classList.add('completa');
+                if (vencida) li.classList.add('vencida');
+                
+                // Criar HTML da tarefa
+                li.innerHTML = `
+                    <div class="tarefa-info">
+                        <span>${tarefa.texto}</span>
+                        <small>Vencimento: ${tarefa.dataVencimento || 'Sem data'}</small>
+                    </div>
+                    <div class="acoes">
+                        <button class="completar">${tarefa.completa ? 'Reativar' : 'Completar'}</button>
+                        <button class="remover">Remover</button>
+                    </div>
+                `;
+                
+                // Adicionar área de subtarefas
+                const subtarefasDiv = document.createElement('div');
+                subtarefasDiv.className = 'subtarefas';
+                
+                // Adicionar input para nova subtarefa
+                const subtarefaInput = document.createElement('div');
+                subtarefaInput.className = 'subtarefa-input';
+                subtarefaInput.innerHTML = `
+                    <input type="text" placeholder="Adicionar subtarefa...">
+                    <button>Adicionar</button>
+                `;
+                
+                // Adicionar subtarefas existentes
+                tarefa.subtarefas.forEach(subtarefa => {
+                    const subtarefaDiv = document.createElement('div');
+                    subtarefaDiv.className = 'subtarefa';
+                    subtarefaDiv.innerHTML = `
+                        <input type="checkbox" ${subtarefa.completa ? 'checked' : ''}>
+                        <span>${subtarefa.texto}</span>
+                    `;
+                    subtarefasDiv.appendChild(subtarefaDiv);
+                    
+                    // Adicionar evento para completar subtarefa
+                    subtarefaDiv.querySelector('input').addEventListener('change', () => {
+                        completarSubtarefa(tarefa.id, subtarefa.id);
+                    });
+                });
+                
+                // Adicionar evento para adicionar nova subtarefa
+                subtarefaInput.querySelector('button').addEventListener('click', () => {
+                    const texto = subtarefaInput.querySelector('input').value.trim();
+                    if (texto) {
+                        adicionarSubtarefa(tarefa.id, texto);
+                        subtarefaInput.querySelector('input').value = '';
+                    }
+                });
+                
+                subtarefasDiv.appendChild(subtarefaInput);
+                li.appendChild(subtarefasDiv);
+                
+                // Adicionar eventos aos botões
+                li.querySelector('.completar').addEventListener('click', () => completarTarefa(tarefa.id));
+                li.querySelector('.remover').addEventListener('click', () => removerTarefa(tarefa.id));
+                
+                // Adicionar à lista
+                listaTarefas.appendChild(li);
+            });
+            
+            // Atualizar estatísticas
+            atualizarEstatisticas();
+        }
+        
+        // Mudar o filtro ativo
+        function mudarFiltro(filtro) {
+            filtroAtual = filtro;
+            
+            // Atualizar classes dos botões
+            todasBtn.classList.remove('ativo');
+            ativasBtn.classList.remove('ativo');
+            completasBtn.classList.remove('ativo');
+            pessoalBtn.classList.remove('ativo');
+            trabalhoBtn.classList.remove('ativo');
+            estudosBtn.classList.remove('ativo');
+            
+            if (filtro === 'todas') {
+                todasBtn.classList.add('ativo');
+            } else if (filtro === 'ativas') {
+                ativasBtn.classList.add('ativo');
+            } else if (filtro === 'completas') {
+                completasBtn.classList.add('ativo');
+            } else if (filtro === 'pessoal') {
+                pessoalBtn.classList.add('ativo');
+            } else if (filtro === 'trabalho') {
+                trabalhoBtn.classList.add('ativo');
+            } else if (filtro === 'estudos') {
+                estudosBtn.classList.add('ativo');
+            }
+            
+            // Atualizar a lista
+            atualizarLista();
+        }
+        
+        // Mudar o filtro de ordenação
+        function mudarOrdenacao(filtro) {
+            // Remover classes ativas dos botões de ordenação
+            ordenarDataBtn.classList.remove('ativo');
+            ordenarTextoBtn.classList.remove('ativo');
+            ordenarStatusBtn.classList.remove('ativo');
+            
+            if (filtro === 'data') {
+                ordenarDataBtn.classList.add('ativo');
+            } else if (filtro === 'texto') {
+                ordenarTextoBtn.classList.add('ativo');
+            } else if (filtro === 'status') {
+                ordenarStatusBtn.classList.add('ativo');
+            }
+            
+            // Atualizar a lista
+            atualizarLista();
+        }
+        
+        // Event Listeners
+        adicionarBtn.addEventListener('click', adicionarTarefa);
+        
+        tarefaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                adicionarTarefa();
+            }
+        });
+        
+        todasBtn.addEventListener('click', () => mudarFiltro('todas'));
+        ativasBtn.addEventListener('click', () => mudarFiltro('ativas'));
+        completasBtn.addEventListener('click', () => mudarFiltro('completas'));
+        pessoalBtn.addEventListener('click', () => mudarFiltro('pessoal'));
+        trabalhoBtn.addEventListener('click', () => mudarFiltro('trabalho'));
+        estudosBtn.addEventListener('click', () => mudarFiltro('estudos'));
+        
+        ordenarDataBtn.addEventListener('click', () => mudarOrdenacao('data'));
+        ordenarTextoBtn.addEventListener('click', () => mudarOrdenacao('texto'));
+        ordenarStatusBtn.addEventListener('click', () => mudarOrdenacao('status'));
+        
+        // Inicializar a aplicação
+        carregarTarefas();
+    </script>
+</body>
+</html>

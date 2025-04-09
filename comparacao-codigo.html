@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparação de Código - Lista de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 100px;
+        }
+
+        h1, h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparacao {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .codigo-container {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .codigo-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .codigo-container h3 {
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        .codigo {
+            background-color: #1e1e1e;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            border-left: 4px solid #00ff00;
+        }
+
+        .diferenca {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: #fff;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #00ff00;
+        }
+
+        .diferenca h4 {
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .destaque {
+            background-color: rgba(0, 140, 255, 0.1);
+            color: #fff;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #008cff;
+        }
+
+        .destaque h3 {
+            color: #008cff;
+            margin-bottom: 10px;
+        }
+
+        .novo {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .removido {
+            color: #ff4444;
+            text-decoration: line-through;
+        }
+
+        .explicacao {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #ffcc00;
+        }
+
+        .explicacao h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .explicacao p {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .navegacao {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+        }
+
+        .navegacao button {
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #00ff00, #008cff);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.5em;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .navegacao button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comparação de Código - Lista de Tarefas</h1>
+        
+        <div class="comparacao">
+            <div class="codigo-container">
+                <h3>Código Antigo</h3>
+                <div class="codigo">
+const tarefa = {
+    id: Date.now(),
+    texto: texto,
+    completa: false,
+    dataCriacao: new Date()
+};
+                </div>
+            </div>
+            
+            <div class="codigo-container">
+                <h3>Código Novo</h3>
+                <div class="codigo">
+const tarefa = {
+    id: Date.now(),
+    texto: texto,
+    completa: false,
+    dataCriacao: new Date(),
+    dataVencimento: dataVencimento,
+    categoria: categoria,
+    subtarefas: []
+};
+                </div>
+            </div>
+        </div>
+
+        <div class="diferenca">
+            <h4>Principais Diferenças:</h4>
+            <ul>
+                <li>Adicionado campo <span class="novo">dataVencimento</span> para controlar o prazo da tarefa</li>
+                <li>Adicionado campo <span class="novo">categoria</span> para classificar as tarefas</li>
+                <li>Adicionado array <span class="novo">subtarefas</span> para permitir tarefas aninhadas</li>
+            </ul>
+        </div>
+
+        <div class="explicacao">
+            <h3>Explicação:</h3>
+            <p>O objeto tarefa foi expandido para incluir novas funcionalidades:</p>
+            <ul>
+                <li><strong>dataVencimento:</strong> Permite definir um prazo para a tarefa</li>
+                <li><strong>categoria:</strong> Permite classificar as tarefas em diferentes tipos</li>
+                <li><strong>subtarefas:</strong> Array que armazena subtarefas relacionadas</li>
+            </ul>
+        </div>
+
+        <div class="comparacao">
+            <div class="codigo-container">
+                <h3>Função Antiga - Adicionar Tarefa</h3>
+                <div class="codigo">
+function adicionarTarefa() {
+    const texto = tarefaInput.value.trim();
+    
+    if (texto === '') {
+        alert('Por favor, digite uma tarefa!');
+        return;
+    }
+    
+    const tarefa = {
+        id: Date.now(),
+        texto: texto,
+        completa: false,
+        dataCriacao: new Date()
+    };
+    
+    tarefas.push(tarefa);
+    tarefaInput.value = '';
+    atualizarLista();
+    salvarTarefas();
+}
+                </div>
+            </div>
+            
+            <div class="codigo-container">
+                <h3>Função Nova - Adicionar Tarefa</h3>
+                <div class="codigo">
+function adicionarTarefa() {
+    const texto = tarefaInput.value.trim();
+    const dataVencimento = document.getElementById('data-vencimento').value;
+    const categoria = document.getElementById('categoria').value;
+    
+    if (texto === '') {
+        alert('Por favor, digite uma tarefa!');
+        return;
+    }
+    
+    const tarefa = {
+        id: Date.now(),
+        texto: texto,
+        completa: false,
+        dataCriacao: new Date(),
+        dataVencimento: dataVencimento,
+        categoria: categoria,
+        subtarefas: []
+    };
+    
+    tarefas.push(tarefa);
+    tarefaInput.value = '';
+    document.getElementById('data-vencimento').value = '';
+    document.getElementById('categoria').value = 'pessoal';
+    atualizarLista();
+    salvarTarefas();
+}
+                </div>
+            </div>
+        </div>
+
+        <div class="destaque">
+            <h3>Novas Funções Adicionadas</h3>
+            <div class="codigo">
+function adicionarSubtarefa(tarefaId, texto) {
+    const tarefa = tarefas.find(item => item.id === tarefaId);
+    if (tarefa) {
+        const subtarefa = {
+            id: Date.now(),
+            texto: texto,
+            completa: false
+        };
+        tarefa.subtarefas.push(subtarefa);
+        atualizarLista();
+        salvarTarefas();
+    }
+}
+
+function completarSubtarefa(tarefaId, subtarefaId) {
+    const tarefa = tarefas.find(item => item.id === tarefaId);
+    if (tarefa) {
+        const subtarefa = tarefa.subtarefas.find(sub => sub.id === subtarefaId);
+        if (subtarefa) {
+            subtarefa.completa = !subtarefa.completa;
+            atualizarLista();
+            salvarTarefas();
+        }
+    }
+}
+
+function atualizarEstatisticas() {
+    const total = tarefas.length;
+    const completas = tarefas.filter(tarefa => tarefa.completa).length;
+    const pendentes = total - completas;
+    
+    sumarioEl.textContent = `Total de tarefas: ${total} | Completas: ${completas} | Pendentes: ${pendentes}`;
+    
+    const porcentagem = total > 0 ? (completas / total) * 100 : 0;
+    document.getElementById('barra-progresso').style.width = `${porcentagem}%`;
+    
+    const estatisticasTexto = document.getElementById('estatisticas-texto');
+    const hoje = new Date();
+    const tarefasHoje = tarefas.filter(tarefa => {
+        const dataCriacao = new Date(tarefa.dataCriacao);
+        return dataCriacao.toDateString() === hoje.toDateString();
+    }).length;
+    
+    estatisticasTexto.textContent = `Tarefas criadas hoje: ${tarefasHoje}`;
+}
+            </div>
+        </div>
+
+        <div class="explicacao">
+            <h3>Resumo das Novas Funcionalidades</h3>
+            <ol>
+                <li><strong>Data de Vencimento:</strong> Permite definir prazos para as tarefas</li>
+                <li><strong>Categorias:</strong> Organiza tarefas em grupos (Pessoal, Trabalho, Estudos)</li>
+                <li><strong>Subtarefas:</strong> Permite criar tarefas aninhadas</li>
+                <li><strong>Estatísticas:</strong> Mostra progresso e métricas de produtividade</li>
+                <li><strong>Ordenação:</strong> Permite organizar tarefas por diferentes critérios</li>
+            </ol>
+        </div>
+
+        <div class="navegacao">
+            <button onclick="window.location.href='todo-list-app (1).html'">Ver Aplicação</button>
+        </div>
+    </div>
+</body>
+</html> 
